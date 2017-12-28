@@ -5,10 +5,10 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
-import java.util.Timer;
 
 import javax.imageio.ImageIO;
 import javax.swing.JPanel;
+import javax.swing.Timer;
 
 public class Board extends JPanel implements KeyListener{
 
@@ -45,6 +45,8 @@ public class Board extends JPanel implements KeyListener{
 				repaint();
 			}
 		});
+
+		timer.start();
 
 		//shapes
 
@@ -110,7 +112,12 @@ public class Board extends JPanel implements KeyListener{
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-
+		if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+			currentShape.setDeltaX(-1);
+		}
+		if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+			currentShape.setDeltaX(1);
+		}
 	}
 
 	@Override
