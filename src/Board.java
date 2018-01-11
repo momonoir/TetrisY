@@ -18,7 +18,7 @@ public class Board extends JPanel implements KeyListener{
 
 	private final int boardWidth = 10, boardHeight = 20;
 
-	private int[][] board = new int[boardWidth][boardHeight];
+	private int[][] board = new int[boardHeight][boardWidth];
 
 	private Shape[] shapes = new Shape[7];
 
@@ -84,7 +84,7 @@ public class Board extends JPanel implements KeyListener{
 			{1, 1}//O-Shape
 		}, this);
 
-		currentShape = shapes[4];
+		setNextShape();
 
 	}
 
@@ -97,6 +97,15 @@ public class Board extends JPanel implements KeyListener{
 
 		currentShape.render(g);
 
+		for (int row = 0; row < board.length; row++) {
+			for (int col = 0; col < board[row].length; col++) {
+				if (board[row][col] != 0) {
+					g.drawImage(blocks.getSubimage(0, 0, blockSize, blockSize),
+					col * blockSize, row * blockSize, null);
+				}
+			}
+		}
+
 		for (int i = 0; i < boardHeight; i++) {
 			g.drawLine(0, i * blockSize, boardWidth * blockSize, i * blockSize);
 		}
@@ -106,8 +115,22 @@ public class Board extends JPanel implements KeyListener{
 		}
 	}
 
+	public void setNextShape() {
+
+		int index = (int)(Math.random() * shapes.length);
+
+		Shape newShape = new Shape(shapes[index].getBlock(), shapes[index].getCoords(), this);
+
+		currentShape = newShape;
+
+	}
+
 	public int getBlockSize() {
 		return blockSize;
+	}
+
+	public int[][] getBoard() {
+		return board;
 	}
 
 	@Override

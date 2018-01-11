@@ -9,6 +9,8 @@ public class Shape {
 	private int deltaX = 0;
 	private int x, y;
 
+	private boolean collision = false, moveX = false;
+
 	private int normalSpeed =  600, speedDown = 60, currentSpeed;
 
 	private long time, lastTime;
@@ -32,22 +34,64 @@ public class Shape {
 		time += System.currentTimeMillis() - lastTime;
 		lastTime = System.currentTimeMillis();
 
+		if (collision) {
+
+			for (int row = 0; row < coords.length; row++) {
+				for (int col = 0; col < coords[row].length; col++) {
+					if (coords[row][col] != 0) {
+						board.getBoard()[y + row][x + col] = 1;
+					}
+				}
+			}
+
+
+			board.setNextShape();
+		}
+
 		if (! (x + deltaX + coords[0].length > 10) && !(x + deltaX < 0)) {
-			x += deltaX;
+
+			for (int row = 0; row < coords.length; row++) {
+				for (int col = 0; col < coords[row].length; col++) {
+					if (coords[row][col] != 0) {
+						if (board.getBoard()[y + row][x + deltaX + col] != 0) {
+							moveX = false;
+						}
+					}
+				}
+			}
+
+			if (moveX) {
+				x += deltaX;
+			}
+
 		}
 
 		if (!(y + 1 + coords.length > 20)) {
+
+			for (int row = 0; row < coords.length; row++) {
+				for (int col = 0; col < coords[row].length; col++) {
+					if (coords[row][col] != 0) {
+						if (board.getBoard()[y + row + 1][col + x] != 0) {
+							collision = true;
+						}
+					}
+				}
+			}
+
 			if (time > currentSpeed) {
 				y ++;
 				time = 0;
 			}
 
+		} else {
+			collision = true;
 		}
 
 
 
 
 		deltaX = 0;
+		moveX = true;
 	}
 
 	public void render(Graphics g) {
@@ -111,6 +155,14 @@ public class Shape {
 
 	public void speedDown() {
 		currentSpeed = speedDown;
-
 	}
+
+	public BufferedImage getBlock() {
+		return block;
+	}
+
+	public int[][] getCoords() {
+		return coords;
+	}
+
 }
