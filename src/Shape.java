@@ -9,16 +9,19 @@ public class Shape {
 	private int deltaX = 0;
 	private int x, y;
 
+	private int color;
+
 	private boolean collision = false, moveX = false;
 
 	private int normalSpeed =  600, speedDown = 60, currentSpeed;
 
 	private long time, lastTime;
 
-	public Shape(BufferedImage block, int[][] coords, Board board) {
+	public Shape(BufferedImage block, int[][] coords, Board board, int color) {
 		this.block = block;
 		this.coords = coords;
 		this.board = board;
+		this.color = color;
 
 		currentSpeed = normalSpeed;
 
@@ -30,7 +33,7 @@ public class Shape {
 
 	}
 
-	void update() {
+	public void update() {
 		time += System.currentTimeMillis() - lastTime;
 		lastTime = System.currentTimeMillis();
 
@@ -39,12 +42,13 @@ public class Shape {
 			for (int row = 0; row < coords.length; row++) {
 				for (int col = 0; col < coords[row].length; col++) {
 					if (coords[row][col] != 0) {
-						board.getBoard()[y + row][x + col] = 1;
+						board.getBoard()[y + row][x + col] = color;
 					}
 				}
 			}
 
 
+			checkLine();
 			board.setNextShape();
 		}
 
@@ -108,7 +112,33 @@ public class Shape {
 		}
 	}
 
+	private void checkLine() {
+		int height = board.getBoard().length -1;
+
+		for (int i = height; i > 0; i--) {
+
+			int count = 0;
+			for (int j = 0; j < board.getBoard()[0].length; j++) {
+
+				if (board.getBoard()[i][j] != 0) {
+					count++;
+				}
+
+				board.getBoard()[height][j] = board.getBoard()[i][j];
+
+			}
+			if (count < board.getBoard()[0].length) {
+				height--;
+			}
+
+		}
+	}
+
 	public void rotate() {
+		if (collision) {
+			return;
+		}
+
 		int[][] rotatedMatrix = null;
 
 		rotatedMatrix = getTranspose(coords);
@@ -117,6 +147,16 @@ public class Shape {
 
 		if (x + rotatedMatrix[0].length > 10 || y + rotatedMatrix.length > 20) {
 			return;
+		}
+
+		for (int row = 0; row < rotatedMatrix.length; row++) {
+			for (int col = 0; col < rotatedMatrix.length; col++) {
+
+				if (board.getBoard()[y + col][x + col] != 0) {
+					return;
+				}
+
+			}
 		}
 
 		coords = rotatedMatrix;
@@ -163,6 +203,10 @@ public class Shape {
 
 	public int[][] getCoords() {
 		return coords;
+	}
+
+	public int getColor() {
+		return color;
 	}
 
 }
